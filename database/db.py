@@ -1,7 +1,5 @@
 from pony.orm import *
-import re
 import config
-import unittest
 
 db = Database()
 
