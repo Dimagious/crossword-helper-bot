@@ -1,58 +1,73 @@
-import telebot
-from telebot import types
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram import ReplyKeyboardMarkup
+import logging
+
+# Enable logging
 import config
-from database.db import *
 
-bot = telebot.TeleBot(config.TOKEN)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
 
-
-@bot.message_handler(commands=['start'])
-def start(message):
-    sent = bot.send_message(message.chat.id, 'Как тебя зовут?')
-    bot.register_next_step_handler(sent, hello)
+logger = logging.getLogger(__name__)
 
 
-def hello(message):
-    bot.send_message(
-        message.chat.id,
-        'Привет, {name}. Рад тебя видеть.'.format(name=message.text))
-    markup = types.ReplyKeyboardMarkup(row_width=2)
-    mask_btn = types.KeyboardButton('По маске')
-    desc_btn = types.KeyboardButton('По описанию')
-    markup.add(mask_btn, desc_btn)
-    bot.send_message(message.chat.id, "Пожалуйста выбери как будем искать слово", reply_markup=markup)
+def start(bot, update):
+    """Send a message when the command /start is issued."""
+    update.message.reply_text('Привет! Я помогу тебе найти нужное слово. Нажми /search, чтобы приступить к поиску')
 
 
-@bot.message_handler(content_types=["text"])
-def repeater(message):
-    if message == 'По маске':
-        sent = bot.send_message(message.chat.id, 'Введи своё слово в соответствии с шаблоном: пр*в*т')
-        bot.register_next_step_handler(sent, search_by_word)
-    elif message == 'По описанию':
-        sent = bot.send_message(message.chat.id, 'Введи задание из кроссворда')
-        bot.register_next_step_handler(sent, search_by_description)
-    else:
-        markup = types.ReplyKeyboardMarkup(row_width=2)
-        mask_btn = types.KeyboardButton('По маске')
-        desc_btn = types.KeyboardButton('По описанию')
-        markup.add(mask_btn, desc_btn)
-        bot.send_message(message.chat.id, "Пожалуйста выбери как будем искать слово", reply_markup=markup)
+def help(bot, update):
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('Чтобы приступить к поиску слов, нажми/search ')
 
 
-@bot.message_handler(commands=['by_word'], content_types=["text"])
-def search_by_word(message):
-    bot.send_message(message.chat.id, 'Скоро тут будет поиск по маске')
+def echo(bot, update):
+    """Echo the user message."""
+    update.message.reply_text(
+        'Меня создавали не для общения, а для помощи в поиске слов. Поэтому нажми /search, чтобы я помог тебе')
 
 
-@bot.message_handler(commands=['by_description'], content_types=["text"])
-def search_by_description(message):
-    bot.send_message(message.chat.id, 'Скоро тут будет поиск по маске')
+def search(bot, update):
+    """Searches the words, that user wants"""
+    keyboard = [['По Маске', 'По описанию']]
+    bot.sendMessage(chat_id=update.message.chat_id,
+                    text="Пожалуйста, выбери как будем искать слово",
+                    reply_markup=ReplyKeyboardMarkup(keyboard, one_time_keyboard=True))
 
 
-@bot.message_handler(regexp="SOME_REGEXP")
-def handle_message(message):
-    pass
+
+def error(bot, update, error):
+    """Log Errors caused by Updates."""
+    logger.warning('Update "%s" caused error "%s"', update, error)
+
+
+def main():
+    """Start the bot."""
+    # Create the EventHandler and pass it your bot's token.
+    updater = Updater(config.TOKEN)
+
+    # Get the dispatcher to register handlers
+    dp = updater.dispatcher
+
+    # on different commands - answer in Telegram
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("search", search))
+
+    # on noncommand i.e message - echo the message on Telegram
+    dp.add_handler(MessageHandler(Filters.text, echo))
+
+    # log all errors
+    dp.add_error_handler(error)
+
+    # Start the Bot
+    updater.start_polling()
+
+    # Run the bot until you press Ctrl-C or the process receives SIGINT,
+    # SIGTERM or SIGABRT. This should be used most of the time, since
+    # start_polling() is non-blocking and will stop the bot gracefully.
+    updater.idle()
 
 
 if __name__ == '__main__':
-    bot.polling(none_stop=True)
+    main()
