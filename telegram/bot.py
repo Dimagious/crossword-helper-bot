@@ -27,13 +27,12 @@ def echo(bot, update):
         'Меня создавали не для общения, а для помощи в поиске слов. Поэтому нажми /search, чтобы я помог тебе')
 
 
-def search(bot, update):
+def search(bot, update, args):
     """Searches the words, that user wants"""
-    keyboard = [['По Маске', 'По описанию']]
+    keyboard = [['По маске'], ['По описанию']]
     bot.sendMessage(chat_id=update.message.chat_id,
                     text="Пожалуйста, выбери как будем искать слово",
                     reply_markup=ReplyKeyboardMarkup(keyboard, one_time_keyboard=True))
-
 
 
 def error(bot, update, error):
