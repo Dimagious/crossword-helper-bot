@@ -8,3 +8,6 @@ PASSWORD = 'aquiva'
 DATABASE = 'Words'
 PORT = '5432'
 
+# urls for parser
+URL_FOR_WORD = 'http://loopy.ru/?word='
+URL_FOR_DESCRIPTION = 'http://loopy.ru/?word=&def='
