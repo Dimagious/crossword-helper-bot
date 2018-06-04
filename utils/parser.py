@@ -17,20 +17,24 @@ def get_html(url):
 
 
 def get_description(word):
-    page = get_html(config.URL_FOR_WORD + word)
-    description = []
-    soup = BeautifulSoup(page, 'html.parser')
-    data = soup.find('div', class_='wd st')
-    for desc in data.find_all('p'):
-        description.append(desc.text.strip())
-    print(description)
-    return description
+    if len(word.strip()) == 0:
+        logger.error('Пользователь не ввел слово')
+        return 'Введите шаблон для поиска'
+    else:
+        page = get_html(config.URL_FOR_WORD + word)
+        description = []
+        soup = BeautifulSoup(page, 'html.parser')
+        data = soup.find('div', class_='wd st')
+        for desc in data.find_all('p'):
+            description.append(desc.text.strip())
+        print(description)
+        return description
 
 
 def get_word_by_mask(mask):
-    if len(mask) == 0:
+    if len(mask.strip()) == 0:
         logger.error('Пользователь не ввел слово')
-        return "Введи шаблон для поиска"
+        return 'Введите шаблон для поиска'
     else:
         page = get_html(config.URL_FOR_WORD + mask + '&def=')
         word = []
@@ -44,16 +48,16 @@ def get_word_by_mask(mask):
 
 
 def get_word_by_description(description):
-    page = get_html(config.URL_FOR_DESCRIPTION + description)
-    word = []
-    soup = BeautifulSoup(page, 'html.parser')
-    data = soup.find_all('div', class_='wd')
-    for item in data:
-        w = item.find('a')
-        word.append(w.text.strip())
-    print(word)
-    return word
-
-
-if __name__ == "__main__":
-    get_description('Пушкин')
+    if len(description.strip()) == 0:
+        logger.error('Пользователь не ввел слово')
+        return 'Введите шаблон для поиска'
+    else:
+        page = get_html(config.URL_FOR_DESCRIPTION + description)
+        word = []
+        soup = BeautifulSoup(page, 'html.parser')
+        data = soup.find_all('div', class_='wd')
+        for item in data:
+            w = item.find('a')
+            word.append(w.text.strip())
+        print(word)
+        return word
