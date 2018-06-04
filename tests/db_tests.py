@@ -3,7 +3,7 @@ import unittest
 from database.db import Words
 
 
-class MyTest(unittest.TestCase):
+class TestDb(unittest.TestCase):
     def test_check_word(self):
         self.assertIs(Words.check_word('электричество'), True, 'DB has not this word')
         self.assertIsNot(Words.check_word('провода'), True, 'DB has this word')

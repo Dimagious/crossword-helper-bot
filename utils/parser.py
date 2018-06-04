@@ -2,6 +2,7 @@ import requests
 import config
 import logging
 from bs4 import BeautifulSoup
+
 logger = logging.getLogger(__name__)
 
 
@@ -16,7 +17,7 @@ def get_html(url):
 
 
 def get_description(word):
-    page = get_html(config.URL_FOR_WORD + word + '&def=')
+    page = get_html(config.URL_FOR_WORD + word)
     description = []
     soup = BeautifulSoup(page, 'html.parser')
     data = soup.find('div', class_='wd st')
@@ -26,17 +27,33 @@ def get_description(word):
     return description
 
 
-def get_word(description):
+def get_word_by_mask(mask):
+    if len(mask) == 0:
+        logger.error('Пользователь не ввел слово')
+        return "Введи шаблон для поиска"
+    else:
+        page = get_html(config.URL_FOR_WORD + mask + '&def=')
+        word = []
+        soup = BeautifulSoup(page, 'html.parser')
+        data = soup.find_all('div', class_='wd')
+        for item in data:
+            w = item.find('a')
+            word.append(w.text.strip())
+        print(word)
+        return word
+
+
+def get_word_by_description(description):
     page = get_html(config.URL_FOR_DESCRIPTION + description)
     word = []
     soup = BeautifulSoup(page, 'html.parser')
-    data = soup.find('div', class_='wd st')
-    for w in data.find_all('a'):
+    data = soup.find_all('div', class_='wd')
+    for item in data:
+        w = item.find('a')
         word.append(w.text.strip())
-    print(word[0])
-    return word[0]
+    print(word)
+    return word
 
 
 if __name__ == "__main__":
-    get_description('стол')
-    get_word('четыре братца под')
+    get_description('Пушкин')

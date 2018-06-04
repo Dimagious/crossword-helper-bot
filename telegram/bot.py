@@ -1,8 +1,6 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram import ReplyKeyboardMarkup
 import logging
-
-# Enable logging
 import config
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -27,12 +25,21 @@ def echo(bot, update):
         'Меня создавали не для общения, а для помощи в поиске слов. Поэтому нажми /search, чтобы я помог тебе')
 
 
-def search(bot, update, args):
-    """Searches the words, that user wants"""
-    keyboard = [['По маске'], ['По описанию']]
+def search(bot, update):
+    keyboard = [['/шаблон'], ['/описание']]
     bot.sendMessage(chat_id=update.message.chat_id,
                     text="Пожалуйста, выбери как будем искать слово",
                     reply_markup=ReplyKeyboardMarkup(keyboard, one_time_keyboard=True))
+
+
+def search_by_mask(bot, update):
+    update.message.reply_text('здесь будут найденные слова')
+    # bot.sendMessage(update.message.chat_id, get_description(update.message.text))
+
+
+def search_by_description(bot, update):
+    update.message.reply_text('здесь будут найденные слова')
+    # bot.sendMessage(update.message.chat_id, get_word(update.message.text))
 
 
 def error(bot, update, error):
@@ -52,19 +59,13 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("search", search))
-
-    # on noncommand i.e message - echo the message on Telegram
+    dp.add_handler(CommandHandler("шаблон", search_by_mask))
+    dp.add_handler(CommandHandler("описание", search_by_description))
     dp.add_handler(MessageHandler(Filters.text, echo))
-
-    # log all errors
     dp.add_error_handler(error)
 
     # Start the Bot
     updater.start_polling()
-
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
 
 
