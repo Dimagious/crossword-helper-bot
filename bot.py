@@ -1,9 +1,11 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, RegexHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, RegexHandler, ConversationHandler
 from telegram import ReplyKeyboardMarkup
 from utils.parser import *
 
 import logging
 import config
+
+TYPE, TEXT = range(2)
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -11,32 +13,35 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
-def start(bot, update):
+def help(bot, update):
     update.message.reply_text('Привет! Я помогу тебе найти нужное слово. Нажми /search, чтобы приступить к поиску')
 
 
-def help(bot, update):
-    update.message.reply_text('Чтобы приступить к поиску слов, нажми/search ')
-
-
-def echo(bot, update):
-    message = update.message.text
-    if message == 'По маске':
+def choose(bot, update):
+    if update.message.text == 'По маске':
         update.message.reply_text('Введи слово, в котором пропущенные буквы замени на \'*\'.\nПример: п*ивет')
-        search_by_mask(bot, update)
-    elif message == 'По описанию':
+        return TEXT
+    elif update.message.text == 'По описанию':
         update.message.reply_text('Введи задание из кроссворда или его часть.\nПример: рассказ Набокова')
-        search_by_description(bot, update)
+        return TEXT
     else:
         update.message.reply_text(
-            'Меня создавали не для общения, а для помощи в поиске слов. Поэтому нажми /search, чтобы я помог тебе')
+            'Меня создавали не для общения, а для помощи в поиске слов. '
+            'Поэтому нажми /start и выбери как будем искать слово')
+        return TEXT
 
 
-def search(bot, update):
+def start(bot, update):
     keyboard = [['По маске'], ['По описанию']]
     bot.sendMessage(chat_id=update.message.chat_id,
                     text="Пожалуйста, выбери как будем искать слово",
                     reply_markup=ReplyKeyboardMarkup(keyboard, one_time_keyboard=True))
+    return TYPE
+
+
+def search(bot, update):
+    search_by_mask(bot, update)
+    return ConversationHandler.END
 
 
 def search_by_mask(bot, update):
@@ -47,6 +52,11 @@ def search_by_mask(bot, update):
 def search_by_description(bot, update):
     description = update.message.text
     update.message.reply_text(get_word_by_description(description))
+
+
+def cancel(bot, update):
+    bot.sendMessage(update.message.chat_id, "Bye!")
+    return ConversationHandler.END
 
 
 def error(bot, update, error):
@@ -60,11 +70,21 @@ def main():
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
+    conv_handler = ConversationHandler(
+        entry_points=[CommandHandler('start', start)],
+
+        states={
+            TYPE: [MessageHandler(Filters.text, choose)],
+            TEXT: [MessageHandler(Filters.text, search)]
+
+        },
+
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+    dp.add_handler(conv_handler)
+
     # on different commands - answer in Telegram
-    dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
-    dp.add_handler(CommandHandler("search", search))
-    dp.add_handler(MessageHandler(Filters.text, echo))
     dp.add_handler(MessageHandler(Filters.text, search_by_mask))
     dp.add_handler(MessageHandler(Filters.text, search_by_description))
     dp.add_error_handler(error)
