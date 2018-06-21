@@ -2,18 +2,22 @@ import requests
 import config
 import logging
 from bs4 import BeautifulSoup
+import lxml
 
 logger = logging.getLogger(__name__)
 
 
 def get_html(url):
-    try:
-        result = requests.get(url)
-        result.raise_for_status()
-        return result.text
-    except requests.exceptions.RequestException:
-        logger.error('Не получилось подключиться к сайту')
-        return ''
+    while True:
+        try:
+            result = requests.get(url)
+            if result.status_code != 200:
+                logger.info("Ошибка, Код ответа: %s", result.status_code)
+                continue
+            logger.info('Удалось подключиться к сайту')
+            return result
+        except requests.exceptions.RequestException:
+            logger.error('Не получилось подключиться к сайту')
 
 
 def get_description(word):
@@ -23,7 +27,7 @@ def get_description(word):
     else:
         page = get_html(config.URL_FOR_WORD + word)
         description = []
-        soup = BeautifulSoup(page, 'html.parser')
+        soup = BeautifulSoup(page, 'lxml')
         data = soup.find('div', class_='wd st')
         for desc in data.find_all('p'):
             description.append(desc.text.strip())
@@ -37,14 +41,14 @@ def get_word_by_mask(mask):
         return 'Введите шаблон для поиска'
     else:
         page = get_html(config.URL_FOR_WORD + mask + '&def=')
-        word = []
-        soup = BeautifulSoup(page, 'html.parser')
+        words = []
+        soup = BeautifulSoup(page.content, 'lxml')
         data = soup.find_all('div', class_='wd')
         for item in data:
             w = item.find('a')
-            word.append(w.text.strip())
-        print(word)
-        return word
+            words.append(w.text.strip())
+        print('\n'.join(words))
+        return '\n'.join(words)
 
 
 def get_word_by_description(description):
@@ -53,11 +57,15 @@ def get_word_by_description(description):
         return 'Введите шаблон для поиска'
     else:
         page = get_html(config.URL_FOR_DESCRIPTION + description)
-        word = []
-        soup = BeautifulSoup(page, 'html.parser')
+        words = []
+        soup = BeautifulSoup(page, 'lxml')
         data = soup.find_all('div', class_='wd')
         for item in data:
             w = item.find('a')
-            word.append(w.text.strip())
-        print(word)
-        return word
+            words.append(w.text.strip())
+        print('\n'.join(words))
+        return '\n'.join(words)
+
+
+if __name__ == '__main__':
+    get_word_by_mask('П**ём')

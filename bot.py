@@ -1,7 +1,7 @@
+# -*- coding: utf-8 -*-
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, RegexHandler, ConversationHandler
 from telegram import ReplyKeyboardMarkup
 from utils.parser import *
-
 import logging
 import config
 
@@ -26,9 +26,9 @@ def choose(bot, update):
         return TEXT
     else:
         update.message.reply_text(
-            'Меня создавали не для общения, а для помощи в поиске слов. '
+            'Меня создавали исключительно для помощи в поиске слов. '
             'Поэтому нажми /start и выбери как будем искать слово')
-        return TEXT
+        return ConversationHandler.END
 
 
 def start(bot, update):
@@ -47,11 +47,13 @@ def search(bot, update):
 def search_by_mask(bot, update):
     word = update.message.text
     update.message.reply_text(get_word_by_mask(word))
+    update.message.reply_text('Если буду нужен ещё жми /start')
 
 
 def search_by_description(bot, update):
     description = update.message.text
     update.message.reply_text(get_word_by_description(description))
+    update.message.reply_text('Если буду нужен ещё жми /start')
 
 
 def cancel(bot, update):
@@ -64,10 +66,7 @@ def error(bot, update, error):
 
 
 def main():
-    # Create the EventHandler and pass it your bot's token.
     updater = Updater(config.TOKEN)
-
-    # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
     conv_handler = ConversationHandler(
@@ -76,20 +75,17 @@ def main():
         states={
             TYPE: [MessageHandler(Filters.text, choose)],
             TEXT: [MessageHandler(Filters.text, search)]
-
         },
 
         fallbacks=[CommandHandler('cancel', cancel)]
     )
     dp.add_handler(conv_handler)
 
-    # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(MessageHandler(Filters.text, search_by_mask))
     dp.add_handler(MessageHandler(Filters.text, search_by_description))
     dp.add_error_handler(error)
 
-    # Start the Bot
     updater.start_polling()
     updater.idle()
 
