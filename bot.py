@@ -46,13 +46,13 @@ def search(bot, update):
 
 def search_by_mask(bot, update):
     word = update.message.text
-    update.message.reply_text(get_word_by_mask(word))
+    update.message.reply_text(get_word(word))
     update.message.reply_text('Если буду нужен ещё жми /start')
 
 
 def search_by_description(bot, update):
     description = update.message.text
-    update.message.reply_text(get_word_by_description(description))
+    update.message.reply_text(get_word(description))
     update.message.reply_text('Если буду нужен ещё жми /start')
 
 

@@ -35,7 +35,7 @@ def get_description(word):
         return description
 
 
-def get_word_by_mask(user_input):
+def get_word(user_input):
     if len(user_input.strip()) == 0:
         logger.error('Пользователь не ввел слово')
         return 'Введите шаблон для поиска'
