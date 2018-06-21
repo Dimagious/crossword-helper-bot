@@ -1,8 +1,8 @@
 import requests
 import config
 import logging
+import re
 from bs4 import BeautifulSoup
-import lxml
 
 logger = logging.getLogger(__name__)
 
@@ -35,37 +35,25 @@ def get_description(word):
         return description
 
 
-def get_word_by_mask(mask):
-    if len(mask.strip()) == 0:
+def get_word_by_mask(user_input):
+    if len(user_input.strip()) == 0:
         logger.error('Пользователь не ввел слово')
         return 'Введите шаблон для поиска'
+    elif not re.search('[*]', user_input):
+        logger.info('Выполняется поиск по описанию')
+        page = get_html(config.URL_FOR_DESCRIPTION + user_input)
     else:
-        page = get_html(config.URL_FOR_WORD + mask + '&def=')
-        words = []
-        soup = BeautifulSoup(page.content, 'lxml')
-        data = soup.find_all('div', class_='wd')
-        for item in data:
-            w = item.find('a')
-            words.append(w.text.strip())
-        print('\n'.join(words))
-        return '\n'.join(words)
-
-
-def get_word_by_description(description):
-    if len(description.strip()) == 0:
-        logger.error('Пользователь не ввел слово')
-        return 'Введите шаблон для поиска'
-    else:
-        page = get_html(config.URL_FOR_DESCRIPTION + description)
-        words = []
-        soup = BeautifulSoup(page, 'lxml')
-        data = soup.find_all('div', class_='wd')
-        for item in data:
-            w = item.find('a')
-            words.append(w.text.strip())
-        print('\n'.join(words))
-        return '\n'.join(words)
+        logger.info('Выполняется поиск по маске')
+        page = get_html(config.URL_FOR_WORD + user_input + '&def=')
+    words = []
+    soup = BeautifulSoup(page.content, 'lxml')
+    data = soup.find_all('div', class_='wd')
+    for item in data:
+        w = item.find('a')
+        words.append(w.text.strip())
+    print('\n'.join(words))
+    return '\n'.join(words)
 
 
 if __name__ == '__main__':
-    get_word_by_mask('П**ём')
+    get_word_by_mask('Наб**ов')
