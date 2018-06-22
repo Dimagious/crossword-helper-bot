@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, RegexHandler, ConversationHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler
 from telegram import ReplyKeyboardMarkup
 from utils import messages
 from utils.parser import *
@@ -7,10 +7,7 @@ import logging
 import config
 
 TYPE, TEXT = range(2)
-
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
-
+logging.basicConfig(format=messages.LOGGING, level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -70,19 +67,15 @@ def main():
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
-
         states={
             TYPE: [MessageHandler(Filters.text, choose)],
             TEXT: [MessageHandler(Filters.text, search)]
         },
-
         fallbacks=[CommandHandler('cancel', cancel)]
     )
     dp.add_handler(conv_handler)
 
     dp.add_handler(CommandHandler("help", help))
-    dp.add_handler(MessageHandler(Filters.text, search_by_mask))
-    dp.add_handler(MessageHandler(Filters.text, search_by_description))
     dp.add_error_handler(error)
 
     updater.start_polling()

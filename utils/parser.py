@@ -8,19 +8,6 @@ import re
 logger = logging.getLogger(__name__)
 
 
-def get_html(url):
-    while True:
-        try:
-            result = requests.get(url)
-            if result.status_code != 200:
-                logger.info(messages.STATUS_CODE_ERROR, result.status_code)
-                continue
-            logger.info(messages.SUCCESS_CONNECTION)
-            return result
-        except requests.exceptions.RequestException:
-            logger.error(messages.FAILED_CONNECTION)
-
-
 def get_word(user_input):
     if len(user_input.strip()) == 0:
         logger.error(messages.NO_INPUT)
@@ -39,6 +26,19 @@ def get_word(user_input):
         words.append(w.text.strip())
     print('\n'.join(words))
     return '\n'.join(words) if words else messages.NO_RESULT_AFTER_SEARCH
+
+
+def get_html(url):
+    while True:
+        try:
+            result = requests.get(url)
+            if result.status_code != 200:
+                logger.info(messages.STATUS_CODE_ERROR, result.status_code)
+                continue
+            logger.info(messages.SUCCESS_CONNECTION)
+            return result
+        except requests.exceptions.RequestException:
+            logger.error(messages.FAILED_CONNECTION)
 
 
 if __name__ == '__main__':
