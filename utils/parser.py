@@ -1,8 +1,9 @@
+from bs4 import BeautifulSoup
+from utils import messages
 import requests
 import config
 import logging
 import re
-from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
@@ -12,38 +13,23 @@ def get_html(url):
         try:
             result = requests.get(url)
             if result.status_code != 200:
-                logger.info("Ошибка, Код ответа: %s", result.status_code)
+                logger.info(messages.STATUS_CODE_ERROR, result.status_code)
                 continue
-            logger.info('Удалось подключиться к сайту')
+            logger.info(messages.SUCCESS_CONNECTION)
             return result
         except requests.exceptions.RequestException:
-            logger.error('Не получилось подключиться к сайту')
-
-
-def get_description(word):
-    if len(word.strip()) == 0:
-        logger.error('Пользователь не ввел слово')
-        return 'Введите шаблон для поиска'
-    else:
-        page = get_html(config.URL_FOR_WORD + word)
-        description = []
-        soup = BeautifulSoup(page, 'lxml')
-        data = soup.find('div', class_='wd st')
-        for desc in data.find_all('p'):
-            description.append(desc.text.strip())
-        print(description)
-        return description
+            logger.error(messages.FAILED_CONNECTION)
 
 
 def get_word(user_input):
     if len(user_input.strip()) == 0:
-        logger.error('Пользователь не ввел слово')
-        return 'Введите шаблон для поиска'
+        logger.error(messages.NO_INPUT)
+        return messages.INPUT_PLEASE
     elif not re.search('[*]', user_input):
-        logger.info('Выполняется поиск по описанию')
+        logger.info(messages.SEARCHING_BY_DESCRIPTION)
         page = get_html(config.URL_FOR_DESCRIPTION + user_input)
     else:
-        logger.info('Выполняется поиск по маске')
+        logger.info(messages.SEARCHING_BY_MASK)
         page = get_html(config.URL_FOR_WORD + user_input + '&def=')
     words = []
     soup = BeautifulSoup(page.content, 'lxml')
@@ -52,8 +38,8 @@ def get_word(user_input):
         w = item.find('a')
         words.append(w.text.strip())
     print('\n'.join(words))
-    return '\n'.join(words)
+    return '\n'.join(words) if words else messages.NO_RESULT_AFTER_SEARCH
 
 
 if __name__ == '__main__':
-    get_word_by_mask('Наб**ов')
+    get_word('Белый')

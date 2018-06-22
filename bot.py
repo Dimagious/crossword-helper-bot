@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, RegexHandler, ConversationHandler
 from telegram import ReplyKeyboardMarkup
+from utils import messages
 from utils.parser import *
 import logging
 import config
@@ -14,27 +15,25 @@ logger = logging.getLogger(__name__)
 
 
 def help(bot, update):
-    update.message.reply_text('Привет! Я помогу тебе найти нужное слово. Нажми /search, чтобы приступить к поиску')
+    update.message.reply_text(messages.HELP)
 
 
 def choose(bot, update):
-    if update.message.text == 'По маске':
-        update.message.reply_text('Введи слово, в котором пропущенные буквы замени на \'*\'.\nПример: п*ивет')
+    if update.message.text == messages.BY_MASK:
+        update.message.reply_text(messages.MASK_EXAMPLE)
         return TEXT
-    elif update.message.text == 'По описанию':
-        update.message.reply_text('Введи задание из кроссворда или его часть.\nПример: рассказ Набокова')
+    elif update.message.text == messages.BY_DESCRIPTION:
+        update.message.reply_text(messages.DESCRIPTION_EXAMPLE)
         return TEXT
     else:
-        update.message.reply_text(
-            'Меня создавали исключительно для помощи в поиске слов. '
-            'Поэтому нажми /start и выбери как будем искать слово')
+        update.message.reply_text(messages.IF_NOTHING_CHOSEN)
         return ConversationHandler.END
 
 
 def start(bot, update):
-    keyboard = [['По маске'], ['По описанию']]
+    keyboard = [[messages.BY_MASK], [messages.BY_DESCRIPTION]]
     bot.sendMessage(chat_id=update.message.chat_id,
-                    text="Пожалуйста, выбери как будем искать слово",
+                    text=messages.CHOOSE,
                     reply_markup=ReplyKeyboardMarkup(keyboard, one_time_keyboard=True))
     return TYPE
 
@@ -47,22 +46,22 @@ def search(bot, update):
 def search_by_mask(bot, update):
     word = update.message.text
     update.message.reply_text(get_word(word))
-    update.message.reply_text('Если буду нужен ещё жми /start')
+    update.message.reply_text(messages.TRY_AGAIN)
 
 
 def search_by_description(bot, update):
     description = update.message.text
     update.message.reply_text(get_word(description))
-    update.message.reply_text('Если буду нужен ещё жми /start')
+    update.message.reply_text(messages.TRY_AGAIN)
 
 
 def cancel(bot, update):
-    bot.sendMessage(update.message.chat_id, "Bye!")
+    bot.sendMessage(update.message.chat_id, messages.BYE)
     return ConversationHandler.END
 
 
 def error(bot, update, error):
-    logger.warning('Update "%s" caused error "%s"', update, error)
+    logger.warning(messages.ERROR_LOGGING, update, error)
 
 
 def main():
