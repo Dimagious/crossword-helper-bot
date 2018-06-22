@@ -1,0 +1,16 @@
+{
+  "name": "CrosswordHelperBot",
+  "description": "",
+  "scripts": {
+  },
+  "env": {
+  },
+  "formation": {
+  },
+  "addons": [
+
+  ],
+  "buildpacks": [
+
+  ]
+}
