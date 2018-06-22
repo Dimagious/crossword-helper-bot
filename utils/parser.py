@@ -39,7 +39,3 @@ def get_html(url):
             return result
         except requests.exceptions.RequestException:
             logger.error(messages.FAILED_CONNECTION)
-
-
-if __name__ == '__main__':
-    get_word('Белый')
