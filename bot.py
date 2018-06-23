@@ -4,6 +4,7 @@ from telegram import ReplyKeyboardMarkup
 from utils.parser import *
 import logging
 import config
+import os
 
 TYPE, TEXT = range(2)
 logging.basicConfig(format=messages.LOGGING, level=logging.INFO)
@@ -62,6 +63,7 @@ def error(bot, update, error):
 
 def main():
     updater = Updater(config.TOKEN)
+
     dp = updater.dispatcher
 
     conv_handler = ConversationHandler(
@@ -77,7 +79,10 @@ def main():
     dp.add_handler(CommandHandler("help", help))
     dp.add_error_handler(error)
 
-    updater.start_polling()
+    updater.start_webhook(listen="0.0.0.0",
+                          port=int(os.environ.get('PORT', config.PORT)),
+                          url_path=config.TOKEN)
+    updater.bot.set_webhook(config.HOST + config.TOKEN)
     updater.idle()
 
 
