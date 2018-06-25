@@ -18,13 +18,13 @@ def get_word(user_input):
     else:
         logger.info(messages.SEARCHING_BY_MASK)
         page = get_html(config.URL_FOR_WORD + user_input + '&def=')
+
     words = []
     soup = BeautifulSoup(page.content, 'lxml')
     data = soup.find_all('div', class_='wd')
     for item in data:
         w = item.find('a')
         words.append(w.text.strip())
-    print('\n'.join(words))
     return '\n'.join(words) if words else messages.NO_RESULT_AFTER_SEARCH
 
 

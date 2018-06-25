@@ -4,6 +4,7 @@ from telegram import ReplyKeyboardMarkup
 from utils.parser import *
 import logging
 import config
+import os
 
 TYPE, TEXT = range(2)
 logging.basicConfig(format=messages.LOGGING, level=logging.INFO)
@@ -61,6 +62,7 @@ def error(bot, update, error):
 
 
 def main():
+    PORT = int(os.environ.get('PORT', '8443'))
     updater = Updater(config.TOKEN)
 
     dp = updater.dispatcher
@@ -78,7 +80,10 @@ def main():
     dp.add_handler(CommandHandler("help", help))
     dp.add_error_handler(error)
 
-    updater.start_polling()
+    updater.start_webhook(listen="0.0.0.0",
+                          port=PORT,
+                          url_path=config.TOKEN)
+    updater.bot.set_webhook("https://crossword-helper-bot.herokuapp.com/" + config.TOKEN)
     updater.idle()
 
 
