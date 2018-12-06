@@ -69,7 +69,7 @@ def error(bot, update, error):
 def main():
     PORT = int(os.environ.get('PORT', '5000'))
     updater = Updater(config.TOKEN, request_kwargs=PROXY)
-
+    updater.bot.delete_webhook()
     dp = updater.dispatcher
 
     conv_handler = ConversationHandler(
