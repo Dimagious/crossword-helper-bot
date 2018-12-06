@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from utils import messages
+import messages
 import requests
 import config
 import logging

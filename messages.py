@@ -1,3 +1,4 @@
+# coding=utf-8
 # messages to parser.py
 STATUS_CODE_ERROR = 'Ошибка, Код ответа: %s'
 SUCCESS_CONNECTION = 'Удалось подключиться к сайту'

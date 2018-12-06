@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler
 from telegram import ReplyKeyboardMarkup
-from utils.parser import *
+from parser import get_word
 import logging
 import config
 import os
+import messages
+import requests
 
 TYPE, TEXT = range(2)
 logging.basicConfig(format=messages.LOGGING, level=logging.INFO)
@@ -62,7 +64,7 @@ def error(bot, update, error):
 
 
 def main():
-    PORT = int(os.environ.get('PORT', '8443'))
+    PORT = int(os.environ.get('PORT', '5000'))
     updater = Updater(config.TOKEN)
 
     dp = updater.dispatcher
@@ -83,8 +85,12 @@ def main():
     updater.start_webhook(listen="0.0.0.0",
                           port=PORT,
                           url_path=config.TOKEN)
-    updater.bot.set_webhook("https://crossword-helper-bot.herokuapp.com/" + config.TOKEN)
+    updater.bot.set_webhook("webhook_url=https://example.com:8443/" + config.TOKEN)
     updater.idle()
+
+def main():
+    r = requests.get(config.TELEGRAM + '/setWebhook')
+    print(r.json())
 
 
 if __name__ == '__main__':
