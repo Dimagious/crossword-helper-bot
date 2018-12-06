@@ -88,10 +88,6 @@ def main():
     updater.bot.set_webhook("https://mycrosswordbot.herokuapp.com/" + config.TOKEN)
     updater.idle()
 
-def main():
-    r = requests.get(config.TELEGRAM + '/setWebhook')
-    print(r.json())
-
 
 if __name__ == '__main__':
     main()
