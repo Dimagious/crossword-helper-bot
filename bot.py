@@ -88,7 +88,7 @@ def main():
     updater.start_webhook(listen="0.0.0.0",
                           port=PORT,
                           url_path=config.TOKEN)
-    updater.bot.set_webhook("https://mycrosswordbot.herokuapp.com/" + config.TOKEN)
+    updater.bot.set_webhook("https://mycrosswordbot.herokuapp.com/")
 
 
 if __name__ == '__main__':
