@@ -67,9 +67,9 @@ def error(bot, update, error):
 
 
 def main():
-    PORT = int(os.environ.get('PORT', '5000'))
+    # PORT = int(os.environ.get('PORT', '5000'))
     updater = Updater(config.TOKEN, request_kwargs=PROXY)
-    updater.bot.delete_webhook()
+
     dp = updater.dispatcher
 
     conv_handler = ConversationHandler(
@@ -85,10 +85,14 @@ def main():
     dp.add_handler(CommandHandler("help", help))
     dp.add_error_handler(error)
 
-    updater.start_webhook(listen="0.0.0.0",
-                          port=PORT,
-                          url_path=config.TOKEN)
-    updater.bot.set_webhook("https://mycrosswordbot.herokuapp.com/")
+
+
+    # updater.start_webhook(listen="0.0.0.0",
+    #                       port=PORT,
+    #                       url_path=config.TOKEN)
+    updater.start_polling()
+    # updater.bot.set_webhook("https://mycrosswordbot.herokuapp.com/" + config.TOKEN)
+    updater.idle()
 
 
 if __name__ == '__main__':
