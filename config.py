@@ -1,6 +1,6 @@
 # bot
-TOKEN = '608477531:AAFHmizraGrXN2cHNSOEhKpDEZwkgSnw8no'
-TELEGRAM = 'https://api.telegram.org/bot608477531:AAFHmizraGrXN2cHNSOEhKpDEZwkgSnw8no'
+TOKEN = '609304918:AAGGhFv0sl4o6gisjKgR6C5S7-mYVnQQBno'
+TELEGRAM = 'https://api.telegram.org/bot609304918:AAGGhFv0sl4o6gisjKgR6C5S7-mYVnQQBno'
 
 # database
 DATABASELINK = ""

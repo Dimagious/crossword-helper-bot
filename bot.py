@@ -8,6 +8,9 @@ import os
 import messages
 import requests
 
+PROXY = {'proxy_url': 'socks5://t1.learn.python.ru:1080',
+         'urllib3_proxy_kwargs': {'username': 'learn', 'password': 'python'}}
+
 TYPE, TEXT = range(2)
 logging.basicConfig(format=messages.LOGGING, level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -65,7 +68,7 @@ def error(bot, update, error):
 
 def main():
     PORT = int(os.environ.get('PORT', '5000'))
-    updater = Updater(config.TOKEN)
+    updater = Updater(config.TOKEN, request_kwargs=PROXY)
 
     dp = updater.dispatcher
 
@@ -86,7 +89,6 @@ def main():
                           port=PORT,
                           url_path=config.TOKEN)
     updater.bot.set_webhook("https://mycrosswordbot.herokuapp.com/" + config.TOKEN)
-    updater.idle()
 
 
 if __name__ == '__main__':
