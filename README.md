@@ -4,4 +4,4 @@
 
 ##Демонстрация
 
-![Crossword Helper demo](https://github.com/Dimagious/Dimagious.github.io/blob/master/crossword-helper-demo.gif)
+![Crossword Helper demo](/Users/dyurkin/PycharmProjects/crosswordhelperbot/resources/crossword-helper-demo.gif)
