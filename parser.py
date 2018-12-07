@@ -29,13 +29,10 @@ def get_word(user_input):
 
 
 def get_html(url):
-    while True:
-        try:
-            result = requests.get(url)
-            if result.status_code != 200:
-                logger.info(messages.STATUS_CODE_ERROR, result.status_code)
-                continue
-            logger.info(messages.SUCCESS_CONNECTION)
-            return result
-        except requests.exceptions.RequestException:
-            logger.error(messages.FAILED_CONNECTION)
+    result = requests.get(url)
+    if result.status_code != 200:
+        logger.info(messages.STATUS_CODE_ERROR, result.status_code)
+        return messages.FAILED_CONNECTION
+    else:
+        logger.info(messages.SUCCESS_CONNECTION)
+        return result

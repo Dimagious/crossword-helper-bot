@@ -1,4 +1,4 @@
-from utils.parser import *
+from parser import *
 import config
 import unittest
 
