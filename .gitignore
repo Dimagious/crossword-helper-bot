@@ -1,5 +1,5 @@
 # Byte-compiled / optimized / DLL files
-resources
+.resources/
 config.py
 .idea/
 __pycache__/
