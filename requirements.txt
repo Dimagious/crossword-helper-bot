@@ -7,3 +7,5 @@ requests==2.19.1
 telegram==0.0.1
 urllib3==1.23
 PySocks==1.6.8
+bs4==0.0.1
+lxml==4.2.1
