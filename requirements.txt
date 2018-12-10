@@ -3,7 +3,7 @@ chardet==3.0.4
 future==0.16.0
 idna==2.7
 python-telegram-bot==10.1.0
-requests==2.19.1
+requests==2.20.0
 telegram==0.0.1
 urllib3==1.23
 PySocks==1.6.8
