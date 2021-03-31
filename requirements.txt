@@ -8,4 +8,4 @@ telegram==0.0.1
 urllib3==1.24.2
 PySocks==1.6.8
 bs4==0.0.1
-lxml==4.2.1
+lxml==4.6.3
